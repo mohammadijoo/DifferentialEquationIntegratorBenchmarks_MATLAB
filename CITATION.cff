@@ -1,0 +1,11 @@
+cff-version: 1.2.0
+title: Differential Equation Integrator Benchmarks in MATLAB
+message: If you use this repository in teaching or research, please cite it.
+type: software
+authors:
+  - family-names: Mohammadijoo
+    given-names: Abolfazl
+repository-code: https://github.com/mohammadijoo/DifferentialEquationIntegratorBenchmarks_MATLAB
+license: MIT
+date-released: 2026-06-14
+version: 0.1.0
