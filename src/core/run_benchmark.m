@@ -1,112 +1,89 @@
-function run_benchmark(problem, methods, baseOpts)
-%RUN_BENCHMARK Run all applicable methods on one benchmark problem.
+function records = run_benchmark(benchRecord, methods, opts)
+%RUN_BENCHMARK Execute all applicable methods on one benchmark.
 
-outDir = fullfile(pwd, 'results', problem.name);
-if ~exist(outDir, 'dir')
-    mkdir(outDir);
-end
-
-ref = compute_reference(problem, baseOpts);
-
-records = struct([]);
-solutions = struct('method', {}, 't', {}, 'Y', {}, 'stats', {});
-
-for i = 1:numel(methods)
-    method = methods(i);
-    opts = baseOpts;
-    if isfield(problem, 'default_h') && ~isempty(problem.default_h)
-        opts.h = problem.default_h;
-    end
-    if isfield(problem, 'h_max') && ~isempty(problem.h_max)
-        opts.h_max = problem.h_max;
-    end
-
-    if ~method_applies(problem, method)
-        fprintf('  [skip] %-28s not applicable\n', method.name);
-        rec = empty_metric_record(problem, method, 'not_applicable');
-        records = append_record(records, rec); %#ok<AGROW>
-        continue;
-    end
-
-    fprintf('  [run ] %-28s ', method.name);
-    try
-        tic;
-        [t, Y, stats] = method.solver(problem, opts);
-        elapsed = toc;
-        stats.cpu_time = elapsed;
-        rec = compute_metrics(problem, method, t, Y, stats, ref);
-        fprintf('status=%s, error=%g, cpu=%g s\n', rec.status, rec.final_error, rec.cpu_time);
-        solutions(end+1).method = method.name; %#ok<AGROW>
-        solutions(end).t = t;
-        solutions(end).Y = Y;
-        solutions(end).stats = stats;
-    catch ME
-        elapsed = toc;
-        fprintf('failed: %s\n', ME.message);
-        rec = empty_metric_record(problem, method, 'failed');
-        rec.cpu_time = elapsed;
-        rec.message = sanitize_message(ME.message);
-    end
-    records = append_record(records, rec); %#ok<AGROW>
-end
-
-write_results_table(records, fullfile(outDir, 'metrics.csv'));
-save(fullfile(outDir, 'benchmark_results.mat'), 'problem', 'methods', 'records', 'solutions', 'ref');
-plot_benchmark_results(problem, records, solutions, ref, outDir, baseOpts);
-end
-
-function records = append_record(records, rec)
-%APPEND_RECORD Append a metrics record while tolerating field-order differences.
-% MATLAB struct arrays require identical field names and compatible ordering.
-% This helper prevents 'Subscripted assignment between dissimilar structures'.
-
-if isempty(records)
-    records = rec;
+if ~benchRecord.implemented
+    records = skipped_benchmark_record(benchRecord, methods, 'benchmark_planned_not_runnable');
     return;
 end
 
-recordFields = fieldnames(records);
-recFields = fieldnames(rec);
+bench = benchRecord.factory();
+bench.registry = benchRecord;
 
-% Add any new fields from rec to the existing records.
-for k = 1:numel(recFields)
-    name = recFields{k};
-    if ~isfield(records, name)
-        [records.(name)] = deal(default_field_value(rec.(name)));
-        recordFields = fieldnames(records);
+outDir = fullfile(opts.results_dir, bench.name);
+if opts.write_tables || opts.write_plots
+    if ~exist(outDir, 'dir'), mkdir(outDir); end
+end
+
+records = empty_record_array();
+ref = [];
+try
+    ref = compute_reference_solution(bench, opts);
+catch ME
+    warning('Reference solution failed for %s: %s', bench.name, ME.message);
+end
+
+for k = 1:numel(methods)
+    method = methods(k);
+    rec = empty_record();
+    rec.benchmark = bench.name;
+    rec.method = method.name;
+    rec.method_display = method.displayName;
+    rec.category = method.category;
+    rec.status = 'not_run';
+    rec.message = '';
+
+    if ~method.implemented || isempty(method.solver)
+        rec.status = 'method_planned_not_implemented';
+        records(end+1,1) = rec; %#ok<AGROW>
+        continue;
+    end
+    if ~method_supports_benchmark(method, bench)
+        rec.status = 'not_applicable';
+        records(end+1,1) = rec; %#ok<AGROW>
+        continue;
+    end
+
+    try
+        if opts.verbose
+            fprintf('  [run ] %-32s ', method.displayName);
+        end
+        tic;
+        [tout, yout, stats] = method.solver(bench, opts);
+        rec.cpu_time = toc;
+        metrics = compute_metrics(bench, tout, yout, ref);
+        rec.final_error = metrics.final_error;
+        rec.max_error = metrics.max_error;
+        rec.rmse_error = metrics.rmse_error;
+        rec.max_invariant_error = metrics.max_invariant_error;
+        rec.n_steps = stats_get(stats, 'n_steps', max(0,numel(tout)-1));
+        rec.nfev = stats_get(stats, 'nfev', NaN);
+        rec.n_rejected = stats_get(stats, 'n_rejected', 0);
+        rec.n_jacobian = stats_get(stats, 'n_jacobian', 0);
+        rec.n_newton = stats_get(stats, 'n_newton', 0);
+        rec.n_linear_solve = stats_get(stats, 'n_linear_solve', 0);
+        rec.status = stats_get(stats, 'status', 'success');
+        if opts.verbose
+            fprintf('status=%s, error=%g, cpu=%g s\n', rec.status, rec.final_error, rec.cpu_time);
+        end
+    catch ME
+        rec.cpu_time = NaN;
+        rec.status = 'failure';
+        rec.message = ME.message;
+        if opts.verbose
+            fprintf('status=failure: %s\n', ME.message);
+        end
+    end
+    records(end+1,1) = rec; %#ok<AGROW>
+end
+
+if opts.write_tables
+    write_results_table(records, fullfile(outDir, 'summary.csv'));
+end
+if opts.write_plots
+    try
+        plot_benchmark_summary(records, fullfile(outDir, 'summary_plots'));
+    catch ME
+        warning('Plotting failed for %s: %s', bench.name, ME.message);
     end
 end
-
-% Add any missing fields from existing records to rec.
-for k = 1:numel(recordFields)
-    name = recordFields{k};
-    if ~isfield(rec, name)
-        rec.(name) = default_field_value(records(1).(name));
-    end
-end
-
-rec = orderfields(rec, records);
-records(end+1) = rec;
-end
-
-function value = default_field_value(example)
-%DEFAULT_FIELD_VALUE Pick a safe placeholder for missing metric fields.
-if ischar(example)
-    value = '';
-elseif isstring(example)
-    value = string('');
-elseif isnumeric(example) || islogical(example)
-    value = NaN;
-elseif iscell(example)
-    value = {};
-elseif isstruct(example)
-    value = struct([]);
-else
-    value = [];
-end
-end
-
-function s = sanitize_message(s)
-s = strrep(s, newline, ' ');
-s = strrep(s, ',', ';');
 end

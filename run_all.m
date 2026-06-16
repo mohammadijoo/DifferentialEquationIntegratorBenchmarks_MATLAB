@@ -1,22 +1,52 @@
-%% run_all.m
-% Run all registered benchmark problems with all applicable integrators.
+function allResults = run_all(opts)
+%RUN_ALL Run all implemented benchmark/method combinations.
+%
+% allResults = RUN_ALL()
+% allResults = RUN_ALL(opts)
+%
+% By default, future methods and benchmarks are listed in the
+% registries but not executed. This keeps the repository runnable while the
+% expanded documentation catalog grows.
 
-clear; clc;
+if nargin < 1 || isempty(opts)
+    opts = default_options();
+else
+    opts = merge_options(default_options(), opts);
+end
 
-addpath(genpath(fullfile(pwd, 'src')));
+repoRoot = fileparts(mfilename('fullpath'));
+addpath(genpath(repoRoot));
 
 benchmarks = benchmark_registry();
 methods = method_registry();
-opts = default_options();
+
+if ~opts.include_planned_benchmarks
+    benchmarks = benchmarks([benchmarks.implemented]);
+end
+if ~opts.include_planned_methods
+    methods = methods([methods.implemented]);
+end
 
 fprintf('Differential Equation Integrator Benchmarks\n');
-fprintf('Benchmarks: %d | Methods: %d\n\n', numel(benchmarks), numel(methods));
+fprintf('Benchmarks registered: %d | Methods registered: %d\n', numel(benchmarks), numel(methods));
+fprintf('Running only implemented/runnable combinations by default.\n\n');
 
+allResults = struct([]);
 for i = 1:numel(benchmarks)
     fprintf('\n============================================================\n');
     fprintf('Running benchmark: %s\n', benchmarks(i).name);
     fprintf('============================================================\n');
-    run_benchmark(benchmarks(i), methods, opts);
+    results = run_benchmark(benchmarks(i), methods, opts);
+    if isempty(allResults)
+        allResults = results;
+    else
+        allResults = [allResults; results(:)]; %#ok<AGROW>
+    end
 end
 
-fprintf('\nAll benchmark runs completed. See the results/ folder.\n');
+if opts.write_global_summary
+    outDir = fullfile(repoRoot, opts.results_dir);
+    if ~exist(outDir, 'dir'), mkdir(outDir); end
+    write_results_table(allResults, fullfile(outDir, 'all_results_summary.csv'));
+end
+end

@@ -1,21 +1,25 @@
-function run_one_benchmark(benchmarkName)
-%RUN_ONE_BENCHMARK Run one benchmark by registered name.
-%
-% Example:
-%   run_one_benchmark('HarmonicOscillator')
-%   run_one_benchmark('RobertsonKinetics')
+function results = run_one_benchmark(benchmarkName, opts)
+%RUN_ONE_BENCHMARK Run one benchmark by registry name.
 
-addpath(genpath(fullfile(pwd, 'src')));
-
-benchmarks = benchmark_registry();
-methods = method_registry();
-opts = default_options();
-
-idx = find(strcmpi({benchmarks.name}, benchmarkName), 1);
-if isempty(idx)
-    error('Unknown benchmark "%s". Available names are: %s', ...
-        benchmarkName, strjoin({benchmarks.name}, ', '));
+if nargin < 2 || isempty(opts)
+    opts = default_options();
+else
+    opts = merge_options(default_options(), opts);
 end
 
-run_benchmark(benchmarks(idx), methods, opts);
+repoRoot = fileparts(mfilename('fullpath'));
+addpath(genpath(repoRoot));
+
+benchmarks = benchmark_registry();
+idx = find(strcmpi({benchmarks.name}, benchmarkName), 1);
+if isempty(idx)
+    error('Unknown benchmark "%s". Check benchmark_registry.m.', benchmarkName);
+end
+
+methods = method_registry();
+if ~opts.include_planned_methods
+    methods = methods([methods.implemented]);
+end
+
+results = run_benchmark(benchmarks(idx), methods, opts);
 end

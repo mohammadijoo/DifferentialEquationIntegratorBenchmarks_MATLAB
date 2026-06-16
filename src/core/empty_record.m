@@ -1,0 +1,19 @@
+function rec = empty_record()
+rec.benchmark = '';
+rec.method = '';
+rec.method_display = '';
+rec.category = '';
+rec.status = '';
+rec.message = '';
+rec.final_error = NaN;
+rec.max_error = NaN;
+rec.rmse_error = NaN;
+rec.cpu_time = NaN;
+rec.n_steps = NaN;
+rec.nfev = NaN;
+rec.n_rejected = NaN;
+rec.n_jacobian = NaN;
+rec.n_newton = NaN;
+rec.n_linear_solve = NaN;
+rec.max_invariant_error = NaN;
+end

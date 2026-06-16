@@ -1,49 +1,82 @@
 function benchmarks = benchmark_registry()
-%BENCHMARK_REGISTRY Return all benchmark problem definitions.
-% The normalization step ensures that MATLAB can store all problems in one
-% struct array even though only some problems have mechanical metadata,
-% metric windows, or invariants.
+%BENCHMARK_REGISTRY Return current and planned benchmark definitions.
+benchmarks = empty_benchmark_array();
+benchmarks(end+1) = make_benchmark('LinearTestEquation', 'Linear Decay / Dahlquist Test Equation', @benchmark_linear_decay, 'ode_first_order', 'all_first_order', true, 'docs/benchmarks/LinearTestEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('HarmonicOscillator', 'Harmonic Oscillator', @benchmark_harmonic_oscillator, 'mechanical_separable', 'mechanical_separable', true, 'docs/benchmarks/HarmonicOscillator.md', 'implemented');
+benchmarks(end+1) = make_benchmark('VanDerPolOscillator', 'Van der Pol Oscillator', @benchmark_van_der_pol, 'ode_first_order', 'all_first_order', true, 'docs/benchmarks/VanDerPolOscillator.md', 'implemented');
+benchmarks(end+1) = make_benchmark('LorenzSystem', 'Lorenz System', @benchmark_lorenz, 'ode_first_order', 'all_first_order', true, 'docs/benchmarks/LorenzSystem.md', 'implemented');
+benchmarks(end+1) = make_benchmark('RobertsonKinetics', 'Robertson Stiff Chemical Kinetics', @benchmark_robertson, 'ode_first_order', 'all_first_order', true, 'docs/benchmarks/RobertsonKinetics.md', 'implemented');
+benchmarks(end+1) = make_benchmark('KeplerTwoBody', 'Kepler Two-Body Problem', @benchmark_kepler_two_body, 'mechanical_separable', 'mechanical_separable', true, 'docs/benchmarks/KeplerTwoBody.md', 'implemented');
+benchmarks(end+1) = make_benchmark('BrusselatorODE', 'Brusselator O D E', @benchmark_brusselator_ode, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/BrusselatorODE.md', 'implemented');
+benchmarks(end+1) = make_benchmark('DuffingOscillator', 'Duffing Oscillator', @benchmark_duffing_oscillator, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/DuffingOscillator.md', 'implemented');
+benchmarks(end+1) = make_benchmark('ForcedDampedPendulum', 'Forced Damped Pendulum', @benchmark_forced_damped_pendulum, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/ForcedDampedPendulum.md', 'implemented');
+benchmarks(end+1) = make_benchmark('LogisticGrowth', 'Logistic Growth', @benchmark_logistic_growth, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/LogisticGrowth.md', 'implemented');
+benchmarks(end+1) = make_benchmark('LotkaVolterraPredatorPrey', 'Lotka Volterra Predator Prey', @benchmark_lotka_volterra_predator_prey, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/LotkaVolterraPredatorPrey.md', 'implemented');
+benchmarks(end+1) = make_benchmark('RigidBodyEulerEquations', 'Rigid Body Euler Equations', @benchmark_rigid_body_euler_equations, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/RigidBodyEulerEquations.md', 'implemented');
+benchmarks(end+1) = make_benchmark('SIR_EpidemicModel', 'S I R  Epidemic Model', @benchmark_sir_epidemic_model, 'ode_first_order', 'all_first_order', true, 'benchmarks/01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/SIR_EpidemicModel.md', 'implemented');
+benchmarks(end+1) = make_benchmark('AkzoNobelChemicalKinetics', 'Akzo Nobel Chemical Kinetics', @benchmark_akzo_nobel_chemical_kinetics, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/AkzoNobelChemicalKinetics.md', 'implemented');
+benchmarks(end+1) = make_benchmark('AllenCahnMOL_StiffODE', 'Allen Cahn MOL  Stiff O D E', @benchmark_allen_cahn_mol_stiff_ode, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/AllenCahnMOL_StiffODE.md', 'implemented');
+benchmarks(end+1) = make_benchmark('HIRESProblem', 'H I R E S Problem', @benchmark_hiresproblem, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/HIRESProblem.md', 'implemented');
+benchmarks(end+1) = make_benchmark('OregonatorBelousovZhabotinsky', 'Oregonator Belousov Zhabotinsky', @benchmark_oregonator_belousov_zhabotinsky, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/OregonatorBelousovZhabotinsky.md', 'implemented');
+benchmarks(end+1) = make_benchmark('PollutionModelODE', 'Pollution Model O D E', @benchmark_pollution_model_ode, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/PollutionModelODE.md', 'implemented');
+benchmarks(end+1) = make_benchmark('ProtheroRobinsonProblem', 'Prothero Robinson Problem', @benchmark_prothero_robinson_problem, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/ProtheroRobinsonProblem.md', 'implemented');
+benchmarks(end+1) = make_benchmark('RingModulatorCircuitODE', 'Ring Modulator Circuit O D E', @benchmark_ring_modulator_circuit_ode, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/RingModulatorCircuitODE.md', 'implemented');
+benchmarks(end+1) = make_benchmark('StiffBrusselatorRegime', 'Stiff Brusselator Regime', @benchmark_stiff_brusselator_regime, 'ode_first_order', 'all_first_order', true, 'benchmarks/02_ODE_stiff_multiscale_and_chemical_kinetics/StiffBrusselatorRegime.md', 'implemented');
+benchmarks(end+1) = make_benchmark('ChargedParticleInMagneticField', 'Charged Particle In Magnetic Field', @benchmark_charged_particle_in_magnetic_field, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/ChargedParticleInMagneticField.md', 'implemented');
+benchmarks(end+1) = make_benchmark('DoublePendulum', 'Double Pendulum', @benchmark_double_pendulum, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/DoublePendulum.md', 'implemented');
+benchmarks(end+1) = make_benchmark('FPUTLattice', 'F P U T Lattice', @benchmark_fputlattice, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/FPUTLattice.md', 'implemented');
+benchmarks(end+1) = make_benchmark('HenonHeilesHamiltonian', 'Henon Heiles Hamiltonian', @benchmark_henon_heiles_hamiltonian, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/HenonHeilesHamiltonian.md', 'implemented');
+benchmarks(end+1) = make_benchmark('NBodyGravitationalProblem', 'N Body Gravitational Problem', @benchmark_nbody_gravitational_problem, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/NBodyGravitationalProblem.md', 'implemented');
+benchmarks(end+1) = make_benchmark('PlanarRestrictedThreeBodyProblem', 'Planar Restricted Three Body Problem', @benchmark_planar_restricted_three_body_problem, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/PlanarRestrictedThreeBodyProblem.md', 'implemented');
+benchmarks(end+1) = make_benchmark('TodaLattice', 'Toda Lattice', @benchmark_toda_lattice, 'mechanical_or_hamiltonian', 'all_first_order', true, 'benchmarks/03_Hamiltonian_geometric_and_long_time_mechanics/TodaLattice.md', 'implemented');
+benchmarks(end+1) = make_benchmark('ChemicalEquilibriumDAE', 'Chemical Equilibrium DAE', @benchmark_chemical_equilibrium_dae, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/ChemicalEquilibriumDAE.md', 'planned');
+benchmarks(end+1) = make_benchmark('PendulumDAE_Index1', 'Pendulum DAE  Index1', @benchmark_pendulum_dae_index1, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/PendulumDAE_Index1.md', 'planned');
+benchmarks(end+1) = make_benchmark('PendulumDAE_Index3', 'Pendulum DAE  Index3', @benchmark_pendulum_dae_index3, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/PendulumDAE_Index3.md', 'planned');
+benchmarks(end+1) = make_benchmark('RLC_CircuitDAE', 'R L C  Circuit DAE', @benchmark_rlc_circuit_dae, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/RLC_CircuitDAE.md', 'planned');
+benchmarks(end+1) = make_benchmark('RobertsonDAE', 'Robertson DAE', @benchmark_robertson_dae, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/RobertsonDAE.md', 'planned');
+benchmarks(end+1) = make_benchmark('SliderCrankDAE', 'Slider Crank DAE', @benchmark_slider_crank_dae, 'dae', 'dae', false, 'benchmarks/04_DAE_constrained_systems_and_circuits/SliderCrankDAE.md', 'planned');
+benchmarks(end+1) = make_benchmark('AdvectionEquation1D', 'Advection Equation1 D', @benchmark_advection_equation1_d, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/AdvectionEquation1D.md', 'implemented');
+benchmarks(end+1) = make_benchmark('CahnHilliardEquation', 'Cahn Hilliard Equation', @benchmark_cahn_hilliard_equation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/CahnHilliardEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('FisherKPPEquation', 'Fisher KPP Equation', @benchmark_fisher_kppequation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/FisherKPPEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('GrayScottReactionDiffusion', 'Gray Scott Reaction Diffusion', @benchmark_gray_scott_reaction_diffusion, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/GrayScottReactionDiffusion.md', 'implemented');
+benchmarks(end+1) = make_benchmark('HeatEquation1D', 'Heat Equation1 D', @benchmark_heat_equation1_d, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/HeatEquation1D.md', 'implemented');
+benchmarks(end+1) = make_benchmark('InviscidBurgersEquation', 'Inviscid Burgers Equation', @benchmark_inviscid_burgers_equation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/InviscidBurgersEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('KortewegDeVriesEquation', 'Korteweg De Vries Equation', @benchmark_korteweg_de_vries_equation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/KortewegDeVriesEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('KuramotoSivashinskyEquation', 'Kuramoto Sivashinsky Equation', @benchmark_kuramoto_sivashinsky_equation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/KuramotoSivashinskyEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('ViscousBurgersEquation', 'Viscous Burgers Equation', @benchmark_viscous_burgers_equation, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/ViscousBurgersEquation.md', 'implemented');
+benchmarks(end+1) = make_benchmark('WaveEquation1D', 'Wave Equation1 D', @benchmark_wave_equation1_d, 'pde_mol', 'all_first_order', true, 'benchmarks/05_PDE_method_of_lines_and_conservation_laws/WaveEquation1D.md', 'implemented');
+benchmarks(end+1) = make_benchmark('CoxIngersollRossSDE', 'Cox Ingersoll Ross SDE', @benchmark_cox_ingersoll_ross_sde, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/CoxIngersollRossSDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('GeometricBrownianMotionSDE', 'Geometric Brownian Motion SDE', @benchmark_geometric_brownian_motion_sde, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/GeometricBrownianMotionSDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('LangevinEquation', 'Langevin Equation', @benchmark_langevin_equation, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/LangevinEquation.md', 'planned');
+benchmarks(end+1) = make_benchmark('OrnsteinUhlenbeckSDE', 'Ornstein Uhlenbeck SDE', @benchmark_ornstein_uhlenbeck_sde, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/OrnsteinUhlenbeckSDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('StochasticLogisticEquation', 'Stochastic Logistic Equation', @benchmark_stochastic_logistic_equation, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/StochasticLogisticEquation.md', 'planned');
+benchmarks(end+1) = make_benchmark('StochasticLotkaVolterraSDE', 'Stochastic Lotka Volterra SDE', @benchmark_stochastic_lotka_volterra_sde, 'sde', 'sde', false, 'benchmarks/06_SDE_stochastic_differential_equations/StochasticLotkaVolterraSDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('DelayedFeedbackControlDDE', 'Delayed Feedback Control D D E', @benchmark_delayed_feedback_control_dde, 'dde', 'dde', false, 'benchmarks/07_DDE_delay_differential_equations/DelayedFeedbackControlDDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('DelayedSIRModel', 'Delayed SIR Model', @benchmark_delayed_sirmodel, 'dde', 'dde', false, 'benchmarks/07_DDE_delay_differential_equations/DelayedSIRModel.md', 'planned');
+benchmarks(end+1) = make_benchmark('HutchinsonLogisticDDE', 'Hutchinson Logistic D D E', @benchmark_hutchinson_logistic_dde, 'dde', 'dde', false, 'benchmarks/07_DDE_delay_differential_equations/HutchinsonLogisticDDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('MackeyGlassDDE', 'Mackey Glass D D E', @benchmark_mackey_glass_dde, 'dde', 'dde', false, 'benchmarks/07_DDE_delay_differential_equations/MackeyGlassDDE.md', 'planned');
+benchmarks(end+1) = make_benchmark('BlasiusBoundaryLayer', 'Blasius Boundary Layer', @benchmark_blasius_boundary_layer, 'bvp', 'bvp', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/BlasiusBoundaryLayer.md', 'planned');
+benchmarks(end+1) = make_benchmark('BouncingBallHybridSystem', 'Bouncing Ball Hybrid System', @benchmark_bouncing_ball_hybrid_system, 'hybrid', 'hybrid', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/BouncingBallHybridSystem.md', 'planned');
+benchmarks(end+1) = make_benchmark('BratuBVP', 'Bratu BVP', @benchmark_bratu_bvp, 'bvp', 'bvp', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/BratuBVP.md', 'planned');
+benchmarks(end+1) = make_benchmark('ComplementarityContactProblem', 'Complementarity Contact Problem', @benchmark_complementarity_contact_problem, 'hybrid', 'hybrid', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/ComplementarityContactProblem.md', 'planned');
+benchmarks(end+1) = make_benchmark('FractionalDiffusionEquation', 'Fractional Diffusion Equation', @benchmark_fractional_diffusion_equation, 'fractional', 'fractional', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/FractionalDiffusionEquation.md', 'planned');
+benchmarks(end+1) = make_benchmark('FractionalRelaxationCaputo', 'Fractional Relaxation Caputo', @benchmark_fractional_relaxation_caputo, 'fractional', 'fractional', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/FractionalRelaxationCaputo.md', 'planned');
+benchmarks(end+1) = make_benchmark('LaneEmdenBVP', 'Lane Emden BVP', @benchmark_lane_emden_bvp, 'bvp', 'bvp', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/LaneEmdenBVP.md', 'planned');
+benchmarks(end+1) = make_benchmark('RelayControlHybridSystem', 'Relay Control Hybrid System', @benchmark_relay_control_hybrid_system, 'hybrid', 'hybrid', false, 'benchmarks/08_Fractional_BVP_hybrid_and_event_driven_systems/RelayControlHybridSystem.md', 'planned');
+end
 
-raw = { ...
-    benchmark_linear_decay(), ...
-    benchmark_harmonic_oscillator(), ...
-    benchmark_vanderpol(), ...
-    benchmark_lorenz(), ...
-    benchmark_robertson(), ...
-    benchmark_kepler_two_body() ...
-};
-
-template = benchmark_template();
-benchmarks = repmat(template, 1, numel(raw));
-for i = 1:numel(raw)
-    benchmarks(i) = normalize_problem(raw{i}, template);
-end
+function benchmarks = empty_benchmark_array()
+template = make_benchmark('', '', [], '', '', false, '', '');
+benchmarks = repmat(template, 0, 1);
 end
 
-function p = benchmark_template()
-p.name = '';
-p.title = '';
-p.f = [];
-p.tspan = [];
-p.y0 = [];
-p.default_h = [];
-p.h_max = [];
-p.is_stiff = false;
-p.exact = [];
-p.params = struct();
-p.mechanical = struct('is_separable', false, 'q_dim', [], 'v_dim', [], 'accel', []);
-p.invariants = [];
-p.positivity_indices = [];
-p.metric_tspan = [];
-end
-
-function p = normalize_problem(raw, template)
-p = template;
-fields = fieldnames(raw);
-for k = 1:numel(fields)
-    p.(fields{k}) = raw.(fields{k});
-end
-if isempty(p.mechanical)
-    p.mechanical = template.mechanical;
-end
+function b = make_benchmark(name, displayName, factory, equationClass, applicability, implemented, doc, status)
+b.name = name;
+b.displayName = displayName;
+b.factory = factory;
+b.equationClass = equationClass;
+b.applicability = applicability;
+b.implemented = implemented;
+b.doc = doc;
+b.status = status;
 end
