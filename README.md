@@ -101,6 +101,22 @@ results/<BenchmarkName>/
 │   │   ├── 06_SDE_stochastic_differential_equations/
 │   │   ├── 07_DDE_delay_differential_equations/
 │   │   └── 08_Fractional_BVP_hybrid_and_event_driven_systems/
+│   ├── metrics/
+│   │   ├── README.md
+│   │   ├── final_error.md
+│   │   ├── max_error.md
+│   │   ├── rmse_error.md
+│   │   ├── cpu_time.md
+│   │   ├── n_steps.md
+│   │   ├── nfev.md
+│   │   ├── n_rejected.md
+│   │   ├── n_jacobian.md
+│   │   ├── n_newton.md
+│   │   ├── n_linear_solve.md
+│   │   ├── max_invariant_error.md
+│   │   ├── positivity_violation.md
+│   │   ├── constraint_error.md
+│   │   └── status.md
 │   ├── tutorials/
 │   └── references.md
 ├── src/
@@ -137,7 +153,7 @@ results/<BenchmarkName>/
 └── results/
 ```
 
-The `docs/` and `src/` folders intentionally mirror each other: method documentation categories correspond to method implementation categories, and benchmark documentation categories correspond to benchmark implementation categories.
+The `docs/` and `src/` folders intentionally mirror each other: method documentation categories correspond to method implementation categories, benchmark documentation categories correspond to benchmark implementation categories, and metric documentation explains the quantities reported by the framework.
 
 ---
 
@@ -145,16 +161,52 @@ The `docs/` and `src/` folders intentionally mirror each other: method documenta
 
 The methods catalog is organized by numerical method family, not by implementation status.
 
-| Folder | Meaning |
-|---|---|
-| `01_ODE_initial_value_integrators/` | ODE IVP methods, including explicit RK, adaptive RK, implicit methods, BDF/NDF, Adams, Rosenbrock, exponential, IMEX, splitting, symplectic, structural dynamics, adaptivity, nonlinear solves, and linear algebra/backsolve machinery. |
-| `02_DAE_integrators_and_constraint_methods/` | DAE integrators, mass-matrix methods, constraint stabilization, SHAKE/RATTLE-type methods, and DAE initialization ideas. |
-| `03_PDE_time_integration_and_spatial_discretization_methods/` | PDE method-of-lines, finite difference, finite volume, finite element, spectral, WENO/TVD, ADI, semi-Lagrangian, and related PDE schemes. |
-| `04_stochastic_differential_equation_methods/` | SDE and stochastic reaction methods, including Euler-Maruyama, Milstein, stochastic RK, tau-leaping, and Gillespie-style simulation. |
-| `05_delay_differential_equation_methods/` | DDE method-of-steps, RK with history interpolation, neutral DDEs, and state-dependent delay methods. |
-| `06_fractional_differential_equation_methods/` | Fractional ODE/PDE and memory-kernel methods such as L1, Grünwald-Letnikov, convolution quadrature, and fast memory approximations. |
-| `07_boundary_value_problem_methods/` | Shooting, multiple shooting, collocation, finite-difference BVP, continuation, and pseudo-arclength continuation methods. |
-| `08_multirate_and_parallel_in_time_methods/` | Multirate RK, MRI-GARK, waveform relaxation, Parareal, PFASST, and parallel-in-time approaches. |
+<table>
+  <colgroup>
+    <col width="30%">
+    <col width="70%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Method / Documentation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ODE initial value integrators</td>
+      <td><strong>Explicit one-step and low-order RK:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/ForwardEuler.md">Forward Euler</a>, <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/ExplicitMidpoint.md">Explicit Midpoint</a>, <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/Heun.md">Heun</a>, <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/Ralston.md">Ralston</a>, <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/KuttaRK3.md">Kutta RK3</a>, <a href="docs/methods/01_ODE_initial_value_integrators/01_explicit_one_step_and_low_order_RK/RK4.md">Classical RK4</a><br><strong>Adaptive and high-order RK:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/02_adaptive_high_order_extrapolation_and_stabilized_RK/RKF45.md">RKF45</a>, <a href="docs/methods/01_ODE_initial_value_integrators/02_adaptive_high_order_extrapolation_and_stabilized_RK/DormandPrinceRK45.md">Dormand-Prince RK45</a><br><strong>Implicit one-step and collocation-style methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/03_implicit_one_step_collocation_and_DIRK/BackwardEuler.md">Backward Euler</a>, <a href="docs/methods/01_ODE_initial_value_integrators/03_implicit_one_step_collocation_and_DIRK/ImplicitMidpoint.md">Implicit Midpoint</a>, <a href="docs/methods/01_ODE_initial_value_integrators/03_implicit_one_step_collocation_and_DIRK/TrapezoidalRule.md">Trapezoidal Rule</a><br><strong>Linear multistep and predictor-corrector methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/04_linear_multistep_BDF_NDF_Adams_and_predictor_corrector/AdamsBashforth2.md">Adams-Bashforth 2</a>, <a href="docs/methods/01_ODE_initial_value_integrators/04_linear_multistep_BDF_NDF_Adams_and_predictor_corrector/AdamsBashforth4.md">Adams-Bashforth 4</a>, <a href="docs/methods/01_ODE_initial_value_integrators/04_linear_multistep_BDF_NDF_Adams_and_predictor_corrector/AdamsMoulton2.md">Adams-Moulton 2</a>, <a href="docs/methods/01_ODE_initial_value_integrators/04_linear_multistep_BDF_NDF_Adams_and_predictor_corrector/ABM4PredictorCorrector.md">ABM4 predictor-corrector</a>, <a href="docs/methods/01_ODE_initial_value_integrators/04_linear_multistep_BDF_NDF_Adams_and_predictor_corrector/BDF2.md">BDF2</a><br><strong>Rosenbrock and linearly implicit stiff methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/05_Rosenbrock_Wanner_and_linearly_implicit_stiff_methods/RosenbrockEuler.md">Rosenbrock-Euler</a>, <a href="docs/methods/01_ODE_initial_value_integrators/05_Rosenbrock_Wanner_and_linearly_implicit_stiff_methods/ROS2.md">ROS2</a><br><strong>Exponential and integrating-factor methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/06_exponential_and_integrating_factor_methods/ExponentialEuler.md">Exponential Euler</a><br><strong>Geometric, symplectic, and energy-oriented methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/SymplecticEuler.md">Symplectic Euler</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/Verlet.md">Verlet</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/VelocityVerlet.md">Velocity Verlet</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/Leapfrog.md">Leapfrog</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/Yoshida4.md">Yoshida 4</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/StrangSplitting.md">Strang splitting</a>, <a href="docs/methods/01_ODE_initial_value_integrators/08_geometric_symplectic_and_energy_preserving_methods/DiscreteGradientOscillator.md">Discrete Gradient Oscillator</a><br><strong>Second-order mechanical and structural dynamics methods:</strong> <a href="docs/methods/01_ODE_initial_value_integrators/09_second_order_mechanical_and_structural_dynamics_methods/NewmarkBeta.md">Newmark-beta</a><br><br>Additional planned and solver-internal documentation is organized under <a href="docs/methods/01_ODE_initial_value_integrators/">docs/methods/01_ODE_initial_value_integrators/</a>.</td>
+    </tr>
+    <tr>
+      <td>DAE integrators and constraint methods</td>
+      <td><a href="docs/methods/02_DAE_integrators_and_constraint_methods/">DAE integrator, mass-matrix, constraint-stabilization, SHAKE/RATTLE, and initialization documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>PDE time integration and spatial discretization methods</td>
+      <td><a href="docs/methods/03_PDE_time_integration_and_spatial_discretization_methods/">Method-of-lines, finite-difference, finite-volume, finite-element, spectral, WENO/TVD, ADI, and semi-Lagrangian documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>Stochastic differential equation methods</td>
+      <td><a href="docs/methods/04_stochastic_differential_equation_methods/">Euler-Maruyama, Milstein, stochastic Runge-Kutta, tau-leaping, and Gillespie-style documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>Delay differential equation methods</td>
+      <td><a href="docs/methods/05_delay_differential_equation_methods/">Method-of-steps, RK history interpolation, neutral DDE, and state-dependent-delay documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>Fractional differential equation methods</td>
+      <td><a href="docs/methods/06_fractional_differential_equation_methods/">Fractional ODE/PDE, L1, Grünwald-Letnikov, convolution quadrature, and fast-memory documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>Boundary value problem methods</td>
+      <td><a href="docs/methods/07_boundary_value_problem_methods/">Shooting, multiple shooting, collocation, finite-difference BVP, continuation, and pseudo-arclength documentation</a>.</td>
+    </tr>
+    <tr>
+      <td>Multirate and parallel-in-time methods</td>
+      <td><a href="docs/methods/08_multirate_and_parallel_in_time_methods/">Multirate RK, MRI-GARK, waveform relaxation, Parareal, PFASST, and parallel-in-time documentation</a>.</td>
+    </tr>
+  </tbody>
+</table>
 
 The ODE folder contains additional subfolders for more precise method families:
 
@@ -179,16 +231,52 @@ The ODE folder contains additional subfolders for more precise method families:
 
 The benchmark catalog is also organized by problem family.
 
-| Folder | Benchmark focus |
-|---|---|
-| `01_ODE_nonstiff_accuracy_and_nonlinear_dynamics/` | Smooth nonlinear ODEs, chaos, oscillation, predator-prey dynamics, epidemic models, and exact-solution tests. |
-| `02_ODE_stiff_multiscale_and_chemical_kinetics/` | Stiff ODEs, chemical kinetics, multiscale transients, stiff reaction-diffusion reductions, and solver robustness tests. |
-| `03_Hamiltonian_geometric_and_long_time_mechanics/` | Hamiltonian systems, conservative mechanics, orbital problems, geometric integration, energy drift, and long-time qualitative behavior. |
-| `04_DAE_constrained_systems_and_circuits/` | Differential-algebraic equations, constrained mechanics, circuit DAEs, equilibrium constraints, and algebraic residual diagnostics. |
-| `05_PDE_method_of_lines_and_conservation_laws/` | PDE-derived ODE systems, heat/wave/advection problems, Burgers-type equations, reaction-diffusion, conservation laws, and stiffness from spatial discretization. |
-| `06_SDE_stochastic_differential_equations/` | Stochastic differential equations, stochastic population models, Langevin-type dynamics, and sample-path/statistical error diagnostics. |
-| `07_DDE_delay_differential_equations/` | Retarded and delayed systems, delayed feedback control, delayed epidemic models, and history interpolation tests. |
-| `08_Fractional_BVP_hybrid_and_event_driven_systems/` | Fractional dynamics, boundary-value problems, event handling, hybrid dynamics, switching systems, and discontinuities. |
+<table>
+  <colgroup>
+    <col width="30%">
+    <col width="70%">
+  </colgroup>
+  <thead>
+    <tr>
+      <th>Category</th>
+      <th>Benchmark / Documentation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>ODE nonstiff accuracy and nonlinear dynamics</td>
+      <td><a href="docs/benchmarks/LinearTestEquation.md">Linear decay / Dahlquist test equation</a>, <a href="docs/benchmarks/VanDerPolOscillator.md">Van der Pol oscillator</a>, <a href="docs/benchmarks/LorenzSystem.md">Lorenz system</a>. This category covers smooth nonlinear ODEs, chaos, oscillation, predator-prey dynamics, epidemic models, and exact-solution tests.</td>
+    </tr>
+    <tr>
+      <td>ODE stiff multiscale and chemical kinetics</td>
+      <td><a href="docs/benchmarks/RobertsonKinetics.md">Robertson kinetics</a>. This category covers stiff ODEs, chemical kinetics, multiscale transients, stiff reaction-diffusion reductions, and robustness tests.</td>
+    </tr>
+    <tr>
+      <td>Hamiltonian geometric and long-time mechanics</td>
+      <td><a href="docs/benchmarks/HarmonicOscillator.md">Harmonic oscillator</a>, <a href="docs/benchmarks/KeplerTwoBody.md">Kepler two-body problem</a>. This category covers Hamiltonian systems, conservative mechanics, orbital problems, geometric integration, energy drift, and long-time qualitative behavior.</td>
+    </tr>
+    <tr>
+      <td>DAE constrained systems and circuits</td>
+      <td>Planned benchmark documentation for differential-algebraic equations, constrained mechanics, circuit DAEs, equilibrium constraints, and algebraic residual diagnostics.</td>
+    </tr>
+    <tr>
+      <td>PDE method of lines and conservation laws</td>
+      <td>Planned benchmark documentation for PDE-derived ODE systems, heat/wave/advection problems, Burgers-type equations, reaction-diffusion systems, conservation laws, and spatial-discretization stiffness.</td>
+    </tr>
+    <tr>
+      <td>SDE stochastic differential equations</td>
+      <td>Planned benchmark documentation for stochastic differential equations, stochastic population models, Langevin-type dynamics, and sample-path/statistical error diagnostics.</td>
+    </tr>
+    <tr>
+      <td>DDE delay differential equations</td>
+      <td>Planned benchmark documentation for retarded systems, delayed feedback control, delayed epidemic models, and history-interpolation tests.</td>
+    </tr>
+    <tr>
+      <td>Fractional BVP hybrid and event-driven systems</td>
+      <td>Planned benchmark documentation for fractional dynamics, boundary-value problems, event handling, hybrid dynamics, switching systems, and discontinuities.</td>
+    </tr>
+  </tbody>
+</table>
 
 ---
 
@@ -257,24 +345,24 @@ This protects normal runs from failing on future scaffold files.
 
 ## Metrics emphasized
 
-The benchmark framework is designed to compare both numerical accuracy and solver mechanics.
+The benchmark framework is designed to compare both numerical accuracy and solver mechanics. Each metric below has its own documentation file under [`docs/metrics/`](docs/metrics/).
 
-| Metric | Meaning |
-|---|---|
-| `final_error` | Error at final time against exact or high-accuracy reference solution. |
-| `max_error` | Maximum trajectory error over the comparison window. |
-| `rmse_error` | Root-mean-square trajectory error. |
-| `cpu_time` | MATLAB wall-clock execution time. |
-| `n_steps` | Accepted step count or output-step count, depending on method. |
-| `nfev` | Number of right-hand-side evaluations. |
-| `n_rejected` | Rejected adaptive steps. |
-| `n_jacobian` | Jacobian evaluations. |
-| `n_newton` | Newton or nonlinear iterations for implicit methods. |
-| `n_linear_solve` | Linear solves/backsolves used inside implicit or linearly implicit methods. |
-| `max_invariant_error` | Drift in mass, energy, angular momentum, or other invariants. |
-| `positivity_violation` | Violation of nonnegative state constraints, when applicable. |
-| `constraint_error` | DAE or geometric constraint residual, when applicable. |
-| `status` | Success, skipped, non-applicable, blow-up, or failure status. |
+| Metric | Meaning | Documentation |
+|---|---|---|
+| `final_error` | Final-time error against exact or high-accuracy reference solution. | [`final_error`](docs/metrics/final_error.md) |
+| `max_error` | Maximum trajectory error over the comparison window. | [`max_error`](docs/metrics/max_error.md) |
+| `rmse_error` | Root-mean-square trajectory error. | [`rmse_error`](docs/metrics/rmse_error.md) |
+| `cpu_time` | MATLAB wall-clock execution time measured around one method/benchmark run. | [`cpu_time`](docs/metrics/cpu_time.md) |
+| `n_steps` | Accepted step count or output-step count, depending on the solver interface. | [`n_steps`](docs/metrics/n_steps.md) |
+| `nfev` | Number of right-hand-side evaluations. | [`nfev`](docs/metrics/nfev.md) |
+| `n_rejected` | Rejected adaptive steps. | [`n_rejected`](docs/metrics/n_rejected.md) |
+| `n_jacobian` | Jacobian evaluations. | [`n_jacobian`](docs/metrics/n_jacobian.md) |
+| `n_newton` | Newton or nonlinear iterations for implicit methods. | [`n_newton`](docs/metrics/n_newton.md) |
+| `n_linear_solve` | Linear solves/backsolves used inside implicit or linearly implicit methods. | [`n_linear_solve`](docs/metrics/n_linear_solve.md) |
+| `max_invariant_error` | Maximum drift in mass, energy, angular momentum, or another invariant. | [`max_invariant_error`](docs/metrics/max_invariant_error.md) |
+| `positivity_violation` | Violation of nonnegative state constraints, when applicable. | [`positivity_violation`](docs/metrics/positivity_violation.md) |
+| `constraint_error` | DAE or geometric constraint residual, when applicable. | [`constraint_error`](docs/metrics/constraint_error.md) |
+| `status` | Success, skipped, non-applicable, blow-up, or failure status. | [`status`](docs/metrics/status.md) |
 
 CPU time alone is not enough for solver comparison. For stiff and implicit methods, Jacobian evaluations, Newton iterations, rejected steps, linear solves, and factorization/backsolve counts are often more informative.
 
@@ -418,6 +506,14 @@ Each benchmark document should describe:
 - pseudocode for the right-hand side or residual,
 - proposed/implemented MATLAB file,
 - recommended metrics and plots.
+
+Each metric document should describe:
+
+- what the metric measures,
+- the mathematical definition,
+- when the metric is meaningful,
+- how to interpret good and bad values,
+- limitations and common pitfalls.
 
 ---
 
