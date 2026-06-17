@@ -1,27 +1,25 @@
-# `max_error`
+# Maximum trajectory error (`max_error`)
 
-## Meaning
+## Purpose
 
-`max_error` measures the largest trajectory error over all reported output times.
+`max_error` measures the largest pointwise trajectory error over all reported output times.
 
-## Mathematical definition
+## Formula
 
-For output times $t_i$, numerical states $y_i$, and reference states $y_{\mathrm{ref}}(t_i)$, define the pointwise error as
+For output times $t_i$, numerical states $y_i$, and reference states $y_{\mathrm{ref}}(t_i)$, define
 
 $$
-e_i=\left\lVert y_i-y_{\mathrm{ref}}(t_i)\right\rVert_2.
+e_i = \left\lVert y_i - y_{\mathrm{ref}}(t_i) \right\rVert_2.
 $$
 
 Then
 
 $$
-\texttt{max\_error}=\max_i e_i.
+E_{\max} = \max_i e_i.
 $$
+
+The value stored in the results table as `max_error` is $E_{\max}$.
 
 ## Interpretation
 
-This metric detects the worst error over the entire comparison window, not only at the endpoint.
-
-## Limitations
-
-It can be sensitive to a single local spike, interpolation mismatch, or transient layer. Use it with `rmse_error` and plots of error versus time.
+This metric is useful for detecting the worst local error over the whole trajectory. It can be sensitive to isolated spikes or interpolation mismatch, so it should be interpreted together with `rmse_error` and error-versus-time plots.

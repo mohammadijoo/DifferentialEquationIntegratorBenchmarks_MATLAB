@@ -1,39 +1,31 @@
-# `constraint_error`
+# Constraint error (`constraint_error`)
 
-## Meaning
+## Purpose
 
 `constraint_error` measures violation of algebraic, geometric, or DAE constraints.
 
-## Mathematical definition
+## Formula
 
-For constraints
+If the solution should satisfy a constraint equation
 
 $$
 g(y)=0,
 $$
 
-a typical diagnostic is
+then a common diagnostic is
 
 $$
-\texttt{constraint\_error}=\max_i \left\lVert g(y_i)\right\rVert_2.
+C_{\max} = \max_i \left\lVert g(y_i) \right\rVert_2.
 $$
 
-For DAE residuals written as
+For a DAE residual $F(t,y,\dot y)=0$, another useful diagnostic is
 
 $$
-F(t,y,y')=0,
+R_{\max} = \max_i \left\lVert F(t_i,y_i,\dot y_i) \right\rVert_2.
 $$
 
-one may also monitor
-
-$$
-\max_i \left\lVert F(t_i,y_i,y_i')\right\rVert_2.
-$$
+The value stored in the results table as `constraint_error` is usually $C_{\max}$ or $R_{\max}$, depending on the benchmark definition.
 
 ## Interpretation
 
-This metric is central for constrained mechanics, circuit DAEs, index-reduced systems, projection methods, SHAKE/RATTLE-type schemes, and geometric constraints.
-
-## Limitations
-
-The scale of the constraint matters. A normalized residual may be needed when different constraints have different physical units.
+This metric is important for DAE problems, constrained mechanics, circuits, contact problems, projection methods, and geometric integration.

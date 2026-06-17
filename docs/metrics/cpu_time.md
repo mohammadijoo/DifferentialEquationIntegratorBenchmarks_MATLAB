@@ -1,21 +1,23 @@
-# `cpu_time`
+# CPU time (`cpu_time`)
 
-## Meaning
+## Purpose
 
 `cpu_time` stores the elapsed MATLAB execution time for one method on one benchmark.
 
-## Measurement
+## Formula
 
-In the current framework, timing is measured around the solver call using MATLAB timing utilities:
+Let $t_{\mathrm{start}}$ and $t_{\mathrm{stop}}$ be the times recorded before and after the solver call. Define
 
 $$
-\texttt{cpu\_time}=t_{\mathrm{stop}}-t_{\mathrm{start}}.
+T_{\mathrm{CPU}} = t_{\mathrm{stop}} - t_{\mathrm{start}}.
 $$
+
+The value stored in the results table as `cpu_time` is $T_{\mathrm{CPU}}$.
 
 ## Interpretation
 
-Lower values usually indicate faster execution for the same benchmark, tolerances, output grid, and hardware.
+Timing is affected by MATLAB overhead, implementation style, hardware, operating-system load, JIT warm-up, plotting, and memory allocation. It should not be used alone.
 
-## Limitations
+## Use with
 
-Timing is affected by MATLAB overhead, implementation style, hardware, operating system load, JIT warm-up, plotting, and memory allocation. It should not be used alone. Pair it with `nfev`, `n_steps`, `n_rejected`, `n_jacobian`, `n_newton`, and `n_linear_solve`.
+Use together with `nfev`, `n_steps`, `n_rejected`, `n_jacobian`, `n_newton`, and `n_linear_solve`.

@@ -1,27 +1,25 @@
-# `max_invariant_error`
+# Maximum invariant drift (`max_invariant_error`)
 
-## Meaning
+## Purpose
 
 `max_invariant_error` measures the maximum drift of a conserved or monitored quantity, such as energy, angular momentum, mass, or another invariant.
 
-## Mathematical definition
+## Formula
 
-For an invariant or diagnostic quantity $I(y)$, define
-
-$$
-I_i=I(y_i).
-$$
-
-Then the maximum invariant drift is
+Let $I(y)$ be the monitored invariant. At output time $t_i$, define
 
 $$
-\texttt{max\_invariant\_error}=\max_i \left| I_i-I_0 \right|.
+I_i = I(y_i).
 $$
+
+Then
+
+$$
+D_{\max} = \max_i \left| I_i - I_0 \right|.
+$$
+
+The value stored in the results table as `max_invariant_error` is $D_{\max}$.
 
 ## Interpretation
 
-This is especially important for Hamiltonian mechanics, orbital dynamics, conservative oscillators, mass-conserving PDEs, and geometric integration tests.
-
-## Limitations
-
-Some systems are dissipative or forced, so the monitored quantity may not be conserved. In those cases, compare against the expected diagnostic behavior instead of assuming zero drift.
+This metric is especially important for Hamiltonian systems, conservative mechanics, orbital dynamics, and long-time simulations where qualitative behavior matters as much as pointwise error.

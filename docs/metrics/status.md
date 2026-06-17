@@ -1,12 +1,12 @@
-# `status`
+# Run status (`status`)
 
-## Meaning
+## Purpose
 
-`status` records the outcome of a method/benchmark run.
+`status` stores the qualitative outcome of one method-benchmark run.
 
 ## Typical values
 
-Common values include:
+Common status labels include:
 
 - `success`
 - `failure`
@@ -18,17 +18,11 @@ Common values include:
 
 ## Interpretation
 
-`status` prevents failed, skipped, or non-applicable runs from being interpreted as valid numerical results.
+A numerical result should not be interpreted from error and timing values alone. The `status` field indicates whether the result is meaningful, skipped, failed, or outside the method's intended applicability.
 
-## Recommended use
-
-When comparing methods, filter or group by status before computing summary plots:
+## Example MATLAB filtering
 
 ```matlab
 valid = strcmp({records.status}, 'success');
 records_success = records(valid);
 ```
-
-## Limitations
-
-A successful run is not necessarily accurate or physically meaningful. Always inspect numerical metrics and qualitative plots.

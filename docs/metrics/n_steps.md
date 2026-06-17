@@ -1,27 +1,25 @@
-# `n_steps`
+# Step count (`n_steps`)
 
-## Meaning
+## Purpose
 
-`n_steps` counts the number of accepted integration steps, or the number of output intervals when a method does not expose an internal step counter.
+`n_steps` counts accepted integration steps, or output intervals when a method does not expose an internal step counter.
 
-## Typical definition
+## Formula
 
 For a fixed-step method with output times $t_0,t_1,\ldots,t_N$,
 
 $$
-\texttt{n\_steps}=N.
+N_{\mathrm{steps}} = N.
 $$
 
-For adaptive methods, the preferred value is the number of accepted internal steps:
+For an adaptive method, a more precise interpretation is
 
 $$
-\texttt{n\_steps}=N_{\mathrm{accepted}}.
+N_{\mathrm{steps}} = N_{\mathrm{accepted}}.
 $$
+
+The value stored in the results table as `n_steps` is $N_{\mathrm{steps}}$.
 
 ## Interpretation
 
-A method requiring fewer accepted steps may be more efficient, but only when accuracy, stability, and rejected-step behavior are also acceptable.
-
-## Limitations
-
-The value is not directly comparable unless the solver interfaces report steps consistently. Use with `n_rejected`, `nfev`, and `cpu_time`.
+This metric should be interpreted carefully because solver interfaces may report steps differently. Use together with `n_rejected`, `nfev`, and `cpu_time`.

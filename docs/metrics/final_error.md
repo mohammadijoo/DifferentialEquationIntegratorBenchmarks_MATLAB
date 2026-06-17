@@ -1,23 +1,23 @@
-# `final_error`
+# Final error (`final_error`)
 
-## Meaning
+## Purpose
 
 `final_error` measures the numerical error at the final reported time of a benchmark run.
 
-## Mathematical definition
+## Formula
 
-Let the numerical solution be $y_N$ at final time $t_N$, and let the exact or high-accuracy reference solution be $y_{\mathrm{ref}}(t_N)$. The metric is
+Let the numerical solution at the final time be $y_N$, and let the exact or high-accuracy reference solution be $y_{\mathrm{ref}}(t_N)$. Define
 
 $$
-\texttt{final\_error}=\left\lVert y_N-y_{\mathrm{ref}}(t_N)\right\rVert_2.
+E_{\mathrm{final}} = \left\lVert y_N - y_{\mathrm{ref}}(t_N) \right\rVert_2.
 $$
 
-For scalar problems, this reduces to the absolute final-time error.
+The value stored in the results table as `final_error` is $E_{\mathrm{final}}$.
 
 ## Interpretation
 
-A smaller value means that the method lands closer to the reference solution at the final time. This is useful for accuracy testing, convergence studies, and work-precision diagrams.
+A smaller value usually means better final-time accuracy. However, this metric can hide transient errors, phase drift, invariant drift, or qualitative trajectory failure before the final time.
 
-## Limitations
+## Use with
 
-Final-time error can hide large transient errors, phase drift, energy drift, or qualitative trajectory failure before the final time. It should be interpreted together with `max_error`, `rmse_error`, and invariant or qualitative diagnostics.
+Use together with `max_error`, `rmse_error`, `max_invariant_error`, and trajectory plots.

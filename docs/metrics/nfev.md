@@ -1,23 +1,19 @@
-# `nfev`
+# Function evaluations (`nfev`)
 
-## Meaning
+## Purpose
 
-`nfev` counts right-hand-side evaluations of the differential equation model.
+`nfev` counts right-hand-side evaluations of the differential equation.
 
-## Mathematical context
+## Formula
 
-For an ODE
+If $f(t,y)$ is evaluated $m$ times during one method run, then
 
 $$
-y'=f(t,y),
+N_f = m.
 $$
 
-`nfev` counts calls to $f(t,y)$.
+The value stored in the results table as `nfev` is $N_f$.
 
 ## Interpretation
 
-This is a direct work metric for explicit methods and remains important for implicit, adaptive, and multistage methods.
-
-## Limitations
-
-One function evaluation may have very different cost depending on the benchmark. For stiff implicit methods, Jacobian evaluations and linear solves may dominate the cost.
+This is often a better work metric than timing when comparing algorithms, because timing also depends on language, implementation, machine load, and MATLAB overhead.

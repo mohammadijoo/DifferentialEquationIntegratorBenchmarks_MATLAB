@@ -1,6 +1,6 @@
 # Metrics documentation
 
-This folder documents the metrics used or planned in the MATLAB benchmark framework.
+This folder documents the benchmark metrics reported or intended by the MATLAB benchmarking framework.
 
 | Metric | Documentation |
 |---|---|
@@ -19,4 +19,4 @@ This folder documents the metrics used or planned in the MATLAB benchmark framew
 | `constraint_error` | [`constraint_error.md`](constraint_error.md) |
 | `status` | [`status.md`](status.md) |
 
-For GitHub Markdown, inline math is written with dollar delimiters and display math is written with double-dollar blocks. These files avoid bracket-style LaTeX delimiters because those are the source of the broken formulas reported in GitHub rendering.
+The metric names above are MATLAB result-field names. Mathematical formulas inside the individual documents use GitHub-compatible display math and avoid placing code-style metric identifiers inside math expressions.
