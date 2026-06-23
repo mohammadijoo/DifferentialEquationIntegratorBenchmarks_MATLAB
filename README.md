@@ -546,3 +546,125 @@ This project is released under the MIT License. See [`LICENSE`](LICENSE).
 ## Citation
 
 If this repository helps your teaching, benchmarking, or research workflow, please cite it using the metadata in [`CITATION.cff`](CITATION.cff).
+
+---
+
+## Feedback-driven benchmark improvements
+
+The framework includes the following additions based on technical feedback about benchmark design, trajectory-error measurement, timing reliability, and solver-work accounting.
+
+### Large stiff PDE-derived ODE system
+
+A runnable [Swift-Hohenberg equation benchmark](docs/benchmarks/05_PDE_method_of_lines_and_conservation_laws/SwiftHohenbergEquation.md) has been added. It uses:
+
+- the one-dimensional periodic Swift-Hohenberg equation,
+- 128 equispaced spatial points,
+- Fourier pseudospectral differentiation,
+- a fourth-order stiff spatial operator,
+- a deterministic multimode initial condition,
+- a high-accuracy stiff reference trajectory.
+
+The spatial discretization produces a 128-dimensional stiff ODE system. This complements the existing Korteweg-de Vries and Kuramoto-Sivashinsky cases by testing scalability, spectral spatial discretization, stiffness handling, and nonlinear pattern-forming dynamics.
+
+Run it with:
+
+```matlab
+results = run_one_benchmark('SwiftHohenbergEquation');
+```
+
+### Trajectory-wide error metrics
+
+Final-time error can be misleading when an inaccurate numerical trajectory eventually approaches the correct equilibrium. The framework therefore reports errors over the full integration interval:
+
+| Metric | Definition and purpose |
+|---|---|
+| `final_error` | Error at the final reported time. |
+| `max_error` | Largest trajectory error over the integration interval. |
+| `time_average_error` | Time integral of the pointwise error divided by total integration time. See [`time_average_error.md`](docs/metrics/time_average_error.md). |
+| `rmse_error` | Time-weighted RMS trajectory error computed by trapezoidal integration over the actual output times. See [`rmse_error.md`](docs/metrics/rmse_error.md). |
+
+Using time integration rather than an unweighted average prevents adaptive solvers from being favored or penalized merely because their output times are nonuniform.
+
+### Repeated timing with JIT warm-up
+
+A single elapsed-time measurement can vary because of MATLAB JIT compilation, memory allocation, operating-system scheduling, and background applications. Timing now supports:
+
+- an optional untimed warm-up run,
+- multiple measured repetitions,
+- median elapsed time in `cpu_time`,
+- minimum elapsed time in `cpu_time_min`,
+- timing variability in `cpu_time_std`,
+- the number of repetitions in `timing_repeats`.
+
+Default settings are:
+
+```matlab
+opts.timing_warmup = true;
+opts.timing_repeats = 3;
+```
+
+The median is used as the primary timing statistic because it is less sensitive to occasional operating-system or background-process delays than a single measurement.
+
+### Independent right-hand-side evaluation counting
+
+The framework can independently count calls to the benchmark right-hand side or mechanical acceleration callback. It uses a closure-based wrapper rather than a global variable.
+
+The counting run is performed separately and is not included in the reported elapsed time, so instrumentation overhead does not distort `cpu_time`. Results include:
+
+- `nfev`, the measured number of callback evaluations,
+- `nfev_source`, indicating whether the value came from the instrumented wrapper or solver-provided statistics.
+
+The default setting is:
+
+```matlab
+opts.count_rhs_evaluations = true;
+```
+
+See [`nfev.md`](docs/metrics/nfev.md) and [`cpu_time.md`](docs/metrics/cpu_time.md) for interpretation guidance.
+
+### Updated summary plots
+
+Benchmark summaries can now generate bar charts for:
+
+- final-time error,
+- time-averaged trajectory error,
+- time-weighted RMS trajectory error,
+- maximum trajectory error,
+- right-hand-side evaluation count,
+- median elapsed time with timing-variability error bars.
+
+### Runtime-cost controls
+
+Warm-up, repeated timing, and the independent counting pass improve measurement quality but require additional solver executions. For a faster exploratory run, use:
+
+```matlab
+opts = default_options();
+opts.timing_warmup = false;
+opts.timing_repeats = 1;
+opts.count_rhs_evaluations = false;
+
+results = run_one_benchmark('SwiftHohenbergEquation', opts);
+```
+
+For a more stable timing comparison, increase the number of repetitions:
+
+```matlab
+opts = default_options();
+opts.timing_repeats = 7;
+
+results = run_one_benchmark('LinearTestEquation', opts);
+```
+
+### Validation test
+
+The feedback-driven additions are covered by:
+
+```text
+tests/test_feedback_improvements.m
+```
+
+Run all tests from the repository root with:
+
+```matlab
+runtests('tests')
+```

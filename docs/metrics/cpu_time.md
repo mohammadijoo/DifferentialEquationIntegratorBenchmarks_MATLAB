@@ -1,23 +1,27 @@
-# CPU time (`cpu_time`)
+# Repeated elapsed time (`cpu_time`)
 
 ## Purpose
 
-`cpu_time` stores the elapsed MATLAB execution time for one method on one benchmark.
+`cpu_time` stores the median elapsed MATLAB execution time for one method on one benchmark after an optional untimed warm-up run.
 
-## Formula
+## Procedure
 
-Let $t_{\mathrm{start}}$ and $t_{\mathrm{stop}}$ be the times recorded before and after the solver call. Define
+For $R$ measured repetitions with elapsed times $T_1,\ldots,T_R$,
 
 $$
-T_{\mathrm{CPU}} = t_{\mathrm{stop}} - t_{\mathrm{start}}.
+T_{\mathrm{reported}}=\operatorname{median}(T_1,\ldots,T_R).
 $$
 
-The value stored in the results table as `cpu_time` is $T_{\mathrm{CPU}}$.
+The results also include:
+
+- `cpu_time_min`: minimum measured elapsed time,
+- `cpu_time_std`: sample standard deviation of the repeated times,
+- `timing_repeats`: number of measured repetitions.
+
+The defaults are controlled by `timing_repeats` and `timing_warmup` in `default_options.m`.
 
 ## Interpretation
 
-Timing is affected by MATLAB overhead, implementation style, hardware, operating-system load, JIT warm-up, plotting, and memory allocation. It should not be used alone.
+Repeated warmed-up measurements reduce, but do not eliminate, variability from MATLAB JIT compilation, operating-system scheduling, background programs, memory allocation, and hardware state. Timing should therefore be interpreted together with algorithmic work counters such as `nfev`.
 
-## Use with
-
-Use together with `nfev`, `n_steps`, `n_rejected`, `n_jacobian`, `n_newton`, and `n_linear_solve`.
+The RHS counter is executed in a separate untimed run so its wrapper overhead does not affect `cpu_time`.

@@ -47,23 +47,31 @@ for k = 1:numel(methods)
         if opts.verbose
             fprintf('  [run ] %-32s ', method.displayName);
         end
-        tic;
-        [tout, yout, stats] = method.solver(bench, opts);
-        rec.cpu_time = toc;
+        timed = run_timed_solver(method, bench, opts);
+        tout = timed.tout;
+        yout = timed.yout;
+        stats = timed.stats;
+        rec.cpu_time = timed.cpu_time;
+        rec.cpu_time_min = timed.cpu_time_min;
+        rec.cpu_time_std = timed.cpu_time_std;
+        rec.timing_repeats = timed.timing_repeats;
         metrics = compute_metrics(bench, tout, yout, ref);
         rec.final_error = metrics.final_error;
         rec.max_error = metrics.max_error;
+        rec.time_average_error = metrics.time_average_error;
         rec.rmse_error = metrics.rmse_error;
         rec.max_invariant_error = metrics.max_invariant_error;
         rec.n_steps = stats_get(stats, 'n_steps', max(0,numel(tout)-1));
-        rec.nfev = stats_get(stats, 'nfev', NaN);
+        rec.nfev = timed.nfev;
+        rec.nfev_source = timed.nfev_source;
         rec.n_rejected = stats_get(stats, 'n_rejected', 0);
         rec.n_jacobian = stats_get(stats, 'n_jacobian', 0);
         rec.n_newton = stats_get(stats, 'n_newton', 0);
         rec.n_linear_solve = stats_get(stats, 'n_linear_solve', 0);
         rec.status = stats_get(stats, 'status', 'success');
         if opts.verbose
-            fprintf('status=%s, error=%g, cpu=%g s\n', rec.status, rec.final_error, rec.cpu_time);
+            fprintf('status=%s, RMS error=%g, median time=%g s, nfev=%g\n', ...
+                rec.status, rec.rmse_error, rec.cpu_time, rec.nfev);
         end
     catch ME
         rec.cpu_time = NaN;

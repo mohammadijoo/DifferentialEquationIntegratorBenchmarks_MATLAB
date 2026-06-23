@@ -2,18 +2,24 @@
 
 ## Purpose
 
-`rmse_error` summarizes the average trajectory error over the reported output times.
+`rmse_error` summarizes trajectory accuracy over the complete integration interval. It is time-weighted so adaptive solvers are not favored or penalized merely because they report more points in difficult regions.
 
 ## Formula
 
-For pointwise errors $e_i$, define
+Let
 
 $$
-E_{\mathrm{rms}} = \sqrt{\frac{1}{N}\sum_{i=1}^{N} e_i^2}.
+e(t)=\lVert y_{\mathrm{num}}(t)-y_{\mathrm{ref}}(t)\rVert_2.
 $$
 
-The value stored in the results table as `rmse_error` is $E_{\mathrm{rms}}$.
+The time-weighted RMS error is
+
+$$
+E_{\mathrm{rms}}=\sqrt{\frac{1}{T-t_0}\int_{t_0}^{T}e(t)^2\,dt}.
+$$
+
+The implementation uses trapezoidal quadrature on the solver's actual output times.
 
 ## Interpretation
 
-This metric reflects overall trajectory accuracy and is usually less dominated by one isolated error spike than `max_error`.
+This metric reflects overall trajectory accuracy, emphasizes sustained large errors more strongly than `time_average_error`, and is less dependent on output-grid density than an unweighted sample average.

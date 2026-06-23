@@ -6,6 +6,7 @@ This folder documents the benchmark metrics reported or intended by the MATLAB b
 |---|---|
 | `final_error` | [`final_error.md`](final_error.md) |
 | `max_error` | [`max_error.md`](max_error.md) |
+| `time_average_error` | [`time_average_error.md`](time_average_error.md) |
 | `rmse_error` | [`rmse_error.md`](rmse_error.md) |
 | `cpu_time` | [`cpu_time.md`](cpu_time.md) |
 | `n_steps` | [`n_steps.md`](n_steps.md) |
